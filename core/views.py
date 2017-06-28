@@ -14,12 +14,17 @@ class SignUpView(CreateView):
     success_url = '/'
 
     def form_valid(self, form):
-        form.save()
+        # вызов super создает объект пользователя и возвращает HttpResponseRedirect на 
+        # success_url, поэтому сохраним его в переменную, чтобы вернуть в конце выполнения
+        # функции
+        response = super(SignUpView, self).form_valid(form)
         user = authenticate(username=form.cleaned_data['username'],
                             password=form.cleaned_data['password1'])
-        login(self.request, user)
+        
+        if user is not None:
+            login(self.request, user)
 
-        return super(SignUpView, self).form_valid(form)
+        return response
 
 
 class SignInView(FormView):
